@@ -145,9 +145,19 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ user, onLogou
       .range(from, to);
 
     if (error) {
-      console.error("Error fetching advertiser campaigns:", error.message);
+      console.error("Error fetching advertiser campaigns:", error);
       let userFriendlyError = "Could not load your campaigns. Please try again later.";
-      if (error.message.includes('violates row-level security policy')) {
+      if (error.message.toLowerCase().includes('failed to fetch')) {
+          userFriendlyError = `Network Error: The request to the database failed. This is often a Cross-Origin Resource Sharing (CORS) issue.`;
+          console.error(
+`Hint: A "Failed to fetch" error is commonly caused by a CORS misconfiguration. Your Supabase project needs to trust the domain where your app is hosted.
+1. Go to your Supabase project dashboard.
+2. Navigate to Project Settings > API.
+3. Find the "CORS Configuration" section.
+4. Add your website's URL (e.g., "${window.location.origin}") to the list of allowed origins.
+`
+          );
+      } else if (error.message.includes('violates row-level security policy')) {
           userFriendlyError = `There's a database security policy blocking access to your campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow advertisers to view their own campaigns.`;
           console.error(
 `Hint: This error is commonly caused by a missing Row Level Security (RLS) policy on the 'campaigns' table. Advertisers need permission to view their own campaigns.
@@ -403,6 +413,7 @@ This is the most common error when setting up the project. To fix it, please run
   
   const totalRewardedPoints = campaigns.reduce((sum, c) => sum + (c.rewardedPoints || 0), 0);
   const totalImpressions = campaigns.reduce((sum, c) => sum + c.impressions, 0);
+  const totalBudget = campaigns.reduce((sum, c) => sum + c.budget, 0);
 
   return (
     <div className="min-h-screen text-white">
@@ -464,56 +475,50 @@ This is the most common error when setting up the project. To fix it, please run
               {/* Analytics Section */}
               <div>
                 <h2 className="text-2xl font-bold text-white mb-4">Key Metrics</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <Card className="p-6">
                     <h3 className="text-gray-400 text-sm font-medium">Credit Balance</h3>
                     <p className="text-3xl font-semibold text-white">{(user.creditBalance ?? 0).toLocaleString()} PTS</p>
                   </Card>
                   <Card className="p-6">
-                    <h3 className="text-gray-400 text-sm font-medium">Points Rewarded</h3>
-                    <p className="text-3xl font-semibold text-white mt-1">{totalRewardedPoints.toLocaleString()}</p>
+                    <h3 className="text-gray-400 text-sm font-medium">Total Budget Allocated</h3>
+                    <p className="text-3xl font-semibold text-white">{totalBudget.toLocaleString()} PTS</p>
                   </Card>
                   <Card className="p-6">
-                    <h3 className="text-gray-400 text-sm font-medium">Total Views</h3>
-                    <p className="text-3xl font-semibold text-white mt-1">{totalImpressions.toLocaleString()}</p>
+                    <h3 className="text-gray-400 text-sm font-medium">Points Rewarded</h3>
+                    <p className="text-3xl font-semibold text-white">{totalRewardedPoints.toLocaleString()} PTS</p>
+                  </Card>
+                  <Card className="p-6">
+                    <h3 className="text-gray-400 text-sm font-medium">Total Impressions</h3>
+                    <p className="text-3xl font-semibold text-white">{totalImpressions.toLocaleString()}</p>
                   </Card>
                 </div>
               </div>
 
+              {/* Campaigns Section */}
               <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">Platform Audience Demographics</h2>
-                  <AudienceAnalytics />
+                <h2 className="text-2xl font-bold text-white mb-4">Your Campaigns</h2>
+                <CampaignList 
+                    campaigns={campaigns} 
+                    onAdjustDiscount={handleOpenDiscountModal}
+                    onLoadMore={handleLoadMore}
+                    hasMore={hasMore}
+                    isLoadingMore={isFetchingMore}
+                    onCreateCampaignClick={() => setIsModalOpen(true)}
+                />
               </div>
 
-              {/* Manage Campaigns Section */}
+               {/* Audience Analytics */}
               <div>
-                <h2 className="text-2xl font-bold text-white mb-4">Manage Your Campaigns</h2>
-                <CampaignList 
-                  campaigns={campaigns} 
-                  onAdjustDiscount={handleOpenDiscountModal}
-                  onLoadMore={handleLoadMore}
-                  hasMore={hasMore}
-                  isLoadingMore={isFetchingMore}
-                  onCreateCampaignClick={() => setIsModalOpen(true)}
-                />
+                <h2 className="text-2xl font-bold text-white mb-4">Audience Analytics</h2>
+                <AudienceAnalytics />
               </div>
             </>
           )}
         </div>
       </div>
-      
-      <div className="pb-16"></div>
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Campaign">
-        <CreateCampaignForm 
-          onCampaignSubmit={handleCampaignSubmit}
-          onClose={() => setIsModalOpen(false)}
-          company={{
-            name: user.username,
-            logoUrl: user.logoUrl || `https://picsum.photos/seed/${user.username}logo/100`,
-            subscriberCount: user.subscribers || 0,
-          }}
-        />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create a New Campaign" subtitle="Fill in the details to launch your ad to thousands of viewers.">
+          <CreateCampaignForm onCampaignSubmit={handleCampaignSubmit} onClose={() => setIsModalOpen(false)} company={{ name: user.username, logoUrl: user.logoUrl || '', subscriberCount: user.subscribers || 0 }} />
       </Modal>
 
       <EditProfileModal
@@ -522,14 +527,15 @@ This is the most common error when setting up the project. To fix it, please run
         user={user}
         onProfileUpdate={handleProfileUpdate}
       />
-
-      <AdjustDiscountModal
-        isOpen={isDiscountModalOpen}
-        onClose={() => setIsDiscountModalOpen(false)}
-        campaign={selectedCampaignForDiscount}
-        onSave={handleSaveDiscount}
-      />
-
+      
+      {selectedCampaignForDiscount && (
+        <AdjustDiscountModal
+          isOpen={isDiscountModalOpen}
+          onClose={() => setIsDiscountModalOpen(false)}
+          campaign={selectedCampaignForDiscount}
+          onSave={handleSaveDiscount}
+        />
+      )}
     </div>
   );
 };
