@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchDashboardData } from './api';
+// import { fetchDashboardData } from './api'; // <-- DELETE THIS LINE
 
 const AdvertiserDashboard = () => {
     const [data, setData] = useState(null);
@@ -9,8 +9,8 @@ const AdvertiserDashboard = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const result = await fetchDashboardData();
-                setData(result);
+                // Replace with your real fetch logic or use a placeholder
+                setData({ message: "Dashboard data loaded!" });
             } catch (err) {
                 setError('Failed to load dashboard data. Please try again later.');
             } finally {
@@ -28,6 +28,7 @@ const AdvertiserDashboard = () => {
         <div>
             <h1>Advertiser Dashboard</h1>
             {/* Render data here */}
+            {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
         </div>
     );
 };
