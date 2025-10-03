@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import { fetchDashboardData } from './api'; // <-- DELETE THIS LINE
+import { supabase } from '../../supabaseClient';
 
 const AdvertiserDashboard = () => {
     const [data, setData] = useState(null);
@@ -9,8 +9,12 @@ const AdvertiserDashboard = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Replace with your real fetch logic or use a placeholder
-                setData({ message: "Dashboard data loaded!" });
+                // Example Supabase query: fetch all campaigns for the advertiser
+                const { data: campaigns, error: supabaseError } = await supabase
+                  .from('campaigns')
+                  .select('*');
+                if (supabaseError) throw supabaseError;
+                setData(campaigns);
             } catch (err) {
                 setError('Failed to load dashboard data. Please try again later.');
             } finally {
@@ -27,8 +31,16 @@ const AdvertiserDashboard = () => {
     return (
         <div>
             <h1>Advertiser Dashboard</h1>
-            {/* Render data here */}
-            {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+            {/* Render campaigns or fallback */}
+            {data && Array.isArray(data) ? (
+                <ul>
+                    {data.map((campaign) => (
+                        <li key={campaign.id}>{campaign.name || "Unnamed Campaign"}</li>
+                    ))}
+                </ul>
+            ) : (
+                <div>No campaigns found.</div>
+            )}
         </div>
     );
 };
