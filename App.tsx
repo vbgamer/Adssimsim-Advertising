@@ -424,7 +424,7 @@ CREATE POLICY "Allow public read access to active campaigns" ON public.campaigns
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'campaigns' },
                 (payload) => {
-                    console.log('Campaigns table change detected, refetching.');
+                    
                     clearInterval(intervalId);
                     fetchInitialData();
                 }

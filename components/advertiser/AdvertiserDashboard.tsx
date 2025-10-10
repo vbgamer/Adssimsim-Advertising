@@ -192,7 +192,7 @@ CREATE POLICY "Allow advertiser to read their own campaigns" ON public.campaigns
             'postgres_changes',
             { event: '*', schema: 'public', table: 'campaigns', filter: `advertiser_id=eq.${user.id}` },
             (payload) => {
-                console.log('Advertiser campaign change detected, refetching.');
+                
                 clearInterval(intervalId);
                 fetchInitialData();
             }
