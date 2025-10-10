@@ -280,7 +280,7 @@ const AdCard: React.FC<{ campaign: Campaign; onClick: () => void }> = ({ campaig
     return (
         <Card className="group overflow-hidden cursor-pointer flex flex-col" onClick={onClick} aria-label={`Watch ad for ${campaign.name}`}>
             {/* Image container */}
-            <div className={`relative`}>
+            <div className={"relative"}>
                 <img 
                     src={displayImageUrl} 
                     alt={campaign.name}
@@ -384,7 +384,7 @@ const AdGalleryPage: React.FC<AdGalleryPageProps> = ({ onViewerAuthRequest, onAd
         console.error("Error fetching active campaigns:", error.message);
         let userFriendlyError = "Could not load campaigns. Please try again later.";
         if (error.message.includes('violates row-level security policy')) {
-          userFriendlyError = `There's a database security policy blocking access to campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow public access to active campaigns.`;
+          userFriendlyError = "There's a database security policy blocking access to campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow public access to active campaigns.";
           console.error(
 `Hint: This error is commonly caused by a missing Row Level Security (RLS) policy on the 'campaigns' table. The public gallery needs to be able to read active campaigns.
 Please go to your Supabase project's SQL Editor and run a command to create a policy for public access.
