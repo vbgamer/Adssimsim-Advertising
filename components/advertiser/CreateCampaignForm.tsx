@@ -102,10 +102,10 @@ const CreateCampaignForm: React.FC<CreateCampaignFormProps> = ({ onCampaignSubmi
     const adPreview = adCreative.previewUrl;
     const thumbPreview = thumbnail.previewUrl;
     return () => {
-      if (adPreview && adPreview.startsWith('blob:')) {
+      if (adPreview?.startsWith('blob:')) {
         URL.revokeObjectURL(adPreview);
       }
-      if (thumbPreview && thumbPreview.startsWith('blob:')) {
+      if (thumbPreview?.startsWith('blob:')) {
         URL.revokeObjectURL(thumbPreview);
       }
     };
