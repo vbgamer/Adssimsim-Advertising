@@ -148,7 +148,7 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ user, onLogou
       console.error("Error fetching advertiser campaigns:", error.message);
       let userFriendlyError = "Could not load your campaigns. Please try again later.";
       if (error.message.includes('violates row-level security policy')) {
-          userFriendlyError = `There's a database security policy blocking access to your campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow advertisers to view their own campaigns.`;
+          userFriendlyError = "There's a database security policy blocking access to your campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow advertisers to view their own campaigns.";
           console.error(
 `Hint: This error is commonly caused by a missing Row Level Security (RLS) policy on the 'campaigns' table. Advertisers need permission to view their own campaigns.
 Please go to your Supabase project's SQL Editor and ensure a policy exists for this.

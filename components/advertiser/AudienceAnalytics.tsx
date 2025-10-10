@@ -63,9 +63,9 @@ const AudienceAnalytics: React.FC = () => {
         let detailedError: string;
 
         if (coreMessage.includes('column "gender" does not exist') || coreMessage.includes('column "country" does not exist')) {
-            detailedError = `Database Schema Mismatch:\nYour 'profiles' table is missing required columns for analytics.\n\nTo fix this, please run the following SQL command in your Supabase project's SQL Editor:\n\nALTER TABLE public.profiles\nADD COLUMN IF NOT EXISTS gender TEXT,\nADD COLUMN IF NOT EXISTS city TEXT,\nADD COLUMN IF NOT EXISTS state TEXT,\nADD COLUMN IF NOT EXISTS country TEXT;`;
+            detailedError = "Database Schema Mismatch:\nYour 'profiles' table is missing required columns for analytics.\n\nTo fix this, please run the following SQL command in your Supabase project's SQL Editor:\n\nALTER TABLE public.profiles\nADD COLUMN IF NOT EXISTS gender TEXT,\nADD COLUMN IF NOT EXISTS city TEXT,\nADD COLUMN IF NOT EXISTS state TEXT,\nADD COLUMN IF NOT EXISTS country TEXT;";
         } else if (coreMessage.includes('function get_audience_demographics does not exist')) {
-            detailedError = `An error occurred while loading analytics.\n\nThe required database function is missing. Please run the setup script provided in the instructions in your Supabase SQL Editor to fix this.`;
+            detailedError = "An error occurred while loading analytics.\n\nThe required database function is missing. Please run the setup script provided in the instructions in your Supabase SQL Editor to fix this.";
         } else {
             detailedError = `An error occurred while loading analytics.\n\nDetails: ${coreMessage}\n\nPlease check your Supabase project's logs for more information.`;
         }
