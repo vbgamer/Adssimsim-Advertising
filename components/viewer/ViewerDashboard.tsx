@@ -78,7 +78,7 @@ const ViewerDashboard: React.FC<ViewerDashboardProps> = ({ user, onLogout, onRew
       console.error("Error fetching active campaigns:", error.message);
       let userFriendlyError = "Could not load campaigns. Please try again later.";
       if (error.message.includes('violates row-level security policy')) {
-        userFriendlyError = `There's a database security policy blocking access to campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow authenticated users to view active campaigns.`;
+        userFriendlyError = "There's a database security policy blocking access to campaigns. If you are the developer, please ensure Row Level Security (RLS) is configured to allow authenticated users to view active campaigns.";
         console.error(
 `Hint: This error is commonly caused by a missing Row Level Security (RLS) policy on the 'campaigns' table. Logged-in viewers need permission to read active campaigns.
 Please go to your Supabase project's SQL Editor and ensure a policy exists for authenticated users to view active campaigns.
