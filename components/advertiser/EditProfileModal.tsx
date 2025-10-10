@@ -94,7 +94,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
             });
             // Parent will close modal on success
         } catch (err: any) {
-            if (err.message && err.message.includes('violates row-level security policy')) {
+            if (err.message?.includes('violates row-level security policy')) {
                 setError(
 `Database Security Error: Your action was blocked by the database's security rules.
 
