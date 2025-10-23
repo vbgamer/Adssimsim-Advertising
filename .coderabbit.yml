@@ -1,0 +1,11 @@
+review:
+  auto_review: true
+  comment_on: all
+  languages:
+    - javascript
+    - typescript
+    - html
+    - css
+  exclude:
+    - node_modules/**
+    - dist/**
