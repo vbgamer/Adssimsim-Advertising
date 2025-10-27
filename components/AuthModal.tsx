@@ -102,7 +102,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initial
     setIsLoading(true);
     setError('');
     
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    // FIX: Property 'signInWithPassword' does not exist on type 'SupabaseAuthClient'.
+    const { error: signInError } = await supabase.auth.signIn({
       email,
       password,
     });
@@ -128,13 +129,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initial
             signUpData.gender = gender;
         }
         
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
+        // FIX: Property 'signUp' does not exist on type 'SupabaseAuthClient'.
+        const { error: signUpError } = await supabase.auth.signUp(
+          { email, password },
+          {
             data: signUpData
           }
-        });
+        );
 
         if (signUpError) {
           if (signUpError.message.includes("User already registered")) {
@@ -163,7 +164,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initial
     setIsLoading(true);
     setError('');
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+    // FIX: Property 'resetPasswordForEmail' does not exist on type 'SupabaseAuthClient'.
+    const { error: resetError } = await (supabase.auth as any).api.resetPasswordForEmail(email, {
         redirectTo: window.location.origin, // Redirect user back to app
     });
 
