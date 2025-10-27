@@ -2,15 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 // Assume process.env.API_KEY is configured in the environment
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  // In a real app, you might have a more robust way to handle this,
-  // but for this context, we'll throw an error if the key is missing.
-  console.error("API_KEY environment variable not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
  * Generates an ad creative image using Gemini's imagen-4.0 model.
