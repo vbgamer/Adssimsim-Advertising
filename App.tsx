@@ -59,7 +59,8 @@ export const App: React.FC = () => {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // FIX: Property 'onAuthStateChange' does not exist on type 'SupabaseAuthClient'.
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
             const { data, error } = await supabase
                 .from('profiles')
@@ -142,6 +143,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleLogout = useCallback(async () => {
+    // FIX: Property 'signOut' does not exist on type 'SupabaseAuthClient'.
     const { error } = await supabase.auth.signOut();
     if (error) console.error('Logout Error:', error);
   }, []);
