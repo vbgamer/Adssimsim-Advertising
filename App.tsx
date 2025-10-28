@@ -59,8 +59,8 @@ export const App: React.FC = () => {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   useEffect(() => {
-    // FIX: Property 'onAuthStateChange' does not exist on type 'SupabaseAuthClient'.
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // FIX: Correctly destructure the subscription object from the onAuthStateChange response.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
             const { data, error } = await supabase
                 .from('profiles')
