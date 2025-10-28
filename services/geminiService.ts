@@ -1,9 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Assume process.env.API_KEY is configured in the environment
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 /**
  * Generates an ad creative image using Gemini's imagen-4.0 model.
  * @param prompt - The text prompt describing the desired image.
@@ -11,6 +8,11 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
  * @returns A promise that resolves to a base64 encoded data URL (e.g., "data:image/jpeg;base64,...").
  */
 export const generateAdCreative = async (prompt: string, aspectRatio: '16:9' | '9:16' | '1:1' | '4:3' | '3:4' = '16:9'): Promise<string> => {
+  // Lazily initialize the AI client to prevent the app from crashing on load
+  // if the API key is not configured. The SDK will throw an error if the key
+  // is missing, which is caught by the calling UI component.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
   try {
     const response = await ai.models.generateImages({
       model: 'imagen-4.0-generate-001',
