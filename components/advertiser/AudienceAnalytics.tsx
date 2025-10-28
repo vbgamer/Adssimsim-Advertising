@@ -31,8 +31,10 @@ const AudienceAnalytics: React.FC = () => {
         if (rpcError) throw rpcError;
 
         if (rpcData) {
-          const genderCounts = rpcData.gender || {};
-          const countryCounts = rpcData.country || {};
+          // FIX: Cast rpcData to 'any' to safely access properties. The 'Json' type
+          // returned by supabase.rpc is too generic for TypeScript to infer the object shape.
+          const genderCounts = (rpcData as any).gender || {};
+          const countryCounts = (rpcData as any).country || {};
 
           const formatData = (counts: { [key: string]: number }, limit?: number) => {
             let sorted = Object.entries(counts)
