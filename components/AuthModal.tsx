@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Campaign, User, Role, UserGender } from './types';
-import AdvertiserDashboard from './components/advertiser/AdvertiserDashboard';
+import AdvertiserDashboard from './advertiser/AdvertiserDashboard';
 import ViewerDashboard from './components/viewer/ViewerDashboard';
 import AuthModal from './components/AuthModal';
 import Button from './components/ui/Button';
