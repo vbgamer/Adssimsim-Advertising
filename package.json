@@ -3,7 +3,7 @@
   "build": "vite build",
   "preview": "vite preview",
   "start": "serve -s dist -l 3000"
-}
+},
 {
   "name": "adssimsim-advertising",
   "private": true,
