@@ -13,6 +13,8 @@ import Spinner from './components/ui/Spinner';
 import Card from './components/ui/Card';
 import { MegaphoneIcon } from './components/icons/MegaphoneIcon';
 import ErrorDisplay from './components/ui/ErrorDisplay';
+import AnimatedCounter from './components/ui/AnimatedCounter';
+import AnimatedCounter from './components/ui/RewardAnimation';
 
 const VerificationSuccessToast = ({ show }: { show: boolean }) => {
   return (
