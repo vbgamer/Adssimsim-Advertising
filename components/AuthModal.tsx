@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from './ui/Modal';
 import Button from './ui/Button';
 import { Role, UserGender } from '../types';
-import { supabase } from '../supabaseClient';
+import { authService } from '../services/api';
 import { Country, State, City } from 'country-state-city';
 import type { ICountry, IState, ICity } from 'country-state-city';
 
@@ -102,56 +102,40 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initial
     setIsLoading(true);
     setError('');
     
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+        await authService.login({ email, password });
+        onLogin();
+    } catch (loginError: any) {
+        // If login fails (e.g., user not found), try to sign them up.
+        try {
+            const signUpData: { [key: string]: any } = {
+                username,
+                email,
+                password,
+                role: initialRole,
+                city,
+                state,
+                country,
+                ...(initialRole === 'advertiser' ? {
+                    subscribers: Math.floor(Math.random() * 50000) + 1000,
+                    banner_url: `https://picsum.photos/seed/${encodeURIComponent(username)}banner/1200/400`,
+                    logo_url: `https://picsum.photos/seed/${encodeURIComponent(username)}logo/200`,
+                    credit_balance: 500,
+                } : {})
+            };
+            if (isViewer) {
+                signUpData.gender = gender;
+            }
 
-    if (signInError) {
-      if (signInError.message.includes("Invalid login credentials")) {
-        const signUpData: { [key: string]: any } = {
-          username: username,
-          email: email,
-          role: initialRole,
-          city,
-          state,
-          country,
-          ...(initialRole === 'advertiser' ? {
-              subscribers: Math.floor(Math.random() * 50000) + 1000,
-              banner_url: `https://picsum.photos/seed/${encodeURIComponent(username)}banner/1200/400`,
-              logo_url: `https://picsum.photos/seed/${encodeURIComponent(username)}logo/200`,
-              credit_balance: 500,
-          } : {})
-        };
-        
-        if (isViewer) {
-            signUpData.gender = gender;
-        }
-        
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: signUpData
-          }
-        });
+            await authService.signup(signUpData);
+            setView('signup_success');
 
-        if (signUpError) {
-          if (signUpError.message.includes("User already registered")) {
-            setError("Invalid credentials. Please check your email and password.");
-          } else {
-            setError(signUpError.message);
-          }
-        } else {
-          setView('signup_success');
+        } catch (signUpError: any) {
+            setError(signUpError.message || 'Login failed and signup was not possible.');
         }
-      } else {
-        setError(signInError.message);
-      }
-    } else {
-      onLogin();
+    } finally {
+        setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
@@ -163,28 +147,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initial
     setIsLoading(true);
     setError('');
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin, // Redirect user back to app
-    });
-
-    if (resetError) {
-        console.error('Password reset error:', resetError);
-        let friendlyMessage = `Error sending recovery email: ${resetError.message}`;
-        if (resetError.message.toLowerCase().includes('rate limit')) {
-             friendlyMessage = "You have requested a password reset too frequently. Please wait a minute and try again.";
-        } else if (resetError.message.toLowerCase().includes("unable to validate")) {
-            friendlyMessage = "Please enter a valid email address.";
-        } else if (navigator.onLine === false) {
-             friendlyMessage = "You appear to be offline. Please check your internet connection and try again.";
-        } else {
-             friendlyMessage = "Could not send recovery email. This may be due to email service configuration on the backend. Please contact the site administrator.";
-        }
-        setError(friendlyMessage);
-    } else {
+    try {
+        await authService.requestPasswordReset(email);
         setView('forgot_password_success');
+    } catch (resetError: any) {
+        setError(resetError.message || "Failed to send password reset email.");
+    } finally {
+        setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   if (!initialRole) {
@@ -198,10 +168,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initial
                 <div className="text-center">
                     <h3 className="text-xl font-bold text-accent-500">Account Created!</h3>
                     <p className="mt-2 text-gray-300">
-                        Please check your email at <span className="font-semibold text-primary-500">{email}</span> to confirm your account. You can close this window.
+                        Your account has been created. You can now log in with your credentials. Some applications may require email verification.
                     </p>
                     <div className="mt-6">
-                        <Button onClick={onClose}>Close</Button>
+                        <Button onClick={() => setView('auth')}>Back to Login</Button>
                     </div>
                 </div>
             );
