@@ -7,6 +7,8 @@ import { ChatBubbleIcon } from '../icons/ChatBubbleIcon';
 import { BookmarkIcon } from '../icons/BookmarkIcon';
 import { ShareIcon } from '../icons/ShareIcon';
 import { SearchIcon } from '../icons/SearchIcon';
+import RewardAnimation from '../ui/RewardAnimation';
+import AnimatedCounter from '../ui/AnimatedCounter';
 
 const LitItem: React.FC<{
     campaign: Campaign;
@@ -19,6 +21,7 @@ const LitItem: React.FC<{
     const [reaction, setReaction] = useState<string | null>(null);
     const [isRewardClaimed, setIsRewardClaimed] = useState(false);
     const [showReactionUI, setShowReactionUI] = useState(false);
+    const [showRewardAnimation, setShowRewardAnimation] = useState(false);
 
     const isVideo = campaign.adCreativeUrl.toLowerCase().endsWith('.mp4') || campaign.adCreativeUrl.toLowerCase().endsWith('.webm');
 
@@ -45,6 +48,7 @@ const LitItem: React.FC<{
         setReaction(null);
         setIsRewardClaimed(false);
         setShowReactionUI(false);
+        setShowRewardAnimation(false);
         if (videoRef.current) {
             videoRef.current.currentTime = 0;
         }
@@ -86,6 +90,7 @@ const LitItem: React.FC<{
         if (isAdWatched && reaction && !isRewardClaimed) {
           onRewardClaimed(campaign, campaign.reward);
           setIsRewardClaimed(true);
+          setShowRewardAnimation(true);
         }
     }, [isAdWatched, reaction, isRewardClaimed, onRewardClaimed, campaign]);
 
@@ -131,6 +136,7 @@ const LitItem: React.FC<{
 
     return (
         <div className="h-full w-full relative flex-shrink-0 scroll-snap-start bg-black flex items-center justify-center">
+             {showRewardAnimation && <RewardAnimation amount={campaign.reward} onAnimationEnd={() => setShowRewardAnimation(false)} />}
              {isVideo ? (
                 <video
                     ref={videoRef}
@@ -200,7 +206,8 @@ const LitItem: React.FC<{
                         ))}
                     </div>
                      <div className="text-center text-sm pt-2 h-5">
-                        {isRewardClaimed && <p className="font-semibold text-accent-500">Reward Claimed! Swipe up for more.</p>}
+                        {isRewardClaimed && !showRewardAnimation && <p className="font-semibold text-accent-500">Reward Claimed! Swipe up for more.</p>}
+                        {isRewardClaimed && showRewardAnimation && <p className="font-semibold text-accent-500/80 animate-pulse">Collecting reward...</p>}
                      </div>
                      <Button onClick={() => window.open(campaign.landingPageUrl, '_blank')} variant="secondary">
                         {campaign.ctaText}
