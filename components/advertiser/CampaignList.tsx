@@ -10,7 +10,6 @@ import { MegaphoneIcon } from '../icons/MegaphoneIcon';
 
 interface CampaignListProps {
   campaigns: Campaign[];
-  onAdjustDiscount: (campaign: Campaign) => void;
   onLoadMore: () => void;
   hasMore: boolean;
   isLoadingMore: boolean;
@@ -37,7 +36,7 @@ const StatusBadge: React.FC<{ status: Campaign['status'] }> = ({ status }) => {
 
 type CampaignType = 'Video' | 'Shortz';
 
-const CampaignList: React.FC<CampaignListProps> = ({ campaigns, onAdjustDiscount, onLoadMore, hasMore, isLoadingMore, onCreateCampaignClick }) => {
+const CampaignList: React.FC<CampaignListProps> = ({ campaigns, onLoadMore, hasMore, isLoadingMore, onCreateCampaignClick }) => {
   const [activeTab, setActiveTab] = useState<CampaignType>('Video');
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [expandedErrorId, setExpandedErrorId] = useState<string | null>(null);
@@ -63,7 +62,7 @@ const CampaignList: React.FC<CampaignListProps> = ({ campaigns, onAdjustDiscount
     <Card>
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center gap-2">
-          {/* Fix: Added children to TabButton components to provide button text and satisfy type requirements. */}
+          {/* FIX: Added children to TabButton components to provide button text and satisfy type requirements. */}
           <TabButton type="Video">Videos</TabButton>
           <TabButton type="Shortz">Shortz</TabButton>
         </div>
@@ -111,15 +110,6 @@ const CampaignList: React.FC<CampaignListProps> = ({ campaigns, onAdjustDiscount
                     {openMenuId === campaign.id && (
                         <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10 py-1 border border-gray-600">
                         <button className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">Hide</button>
-                        <button 
-                            onClick={() => {
-                            onAdjustDiscount(campaign);
-                            setOpenMenuId(null);
-                            }}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
-                        >
-                            Adjust Cashback
-                        </button>
                         <button className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700">Delete</button>
                         </div>
                     )}
