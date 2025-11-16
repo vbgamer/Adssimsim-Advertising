@@ -244,7 +244,7 @@ const CreateCampaignForm: React.FC<CreateCampaignFormProps> = ({ onCampaignSubmi
     onCampaignSubmit({
       name,
       budget: Math.round(campaignCost),
-      reward: 10, // Default reward
+      reward: 0.15, // Standard reward
       adCreativeUrl: '', // This will be replaced by parent after upload
       campaignGoal: 'Brand Awareness',
       ctaText: 'Learn More', // Default CTA
