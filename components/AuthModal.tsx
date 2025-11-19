@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Modal from './ui/Modal';
 import Button from './ui/Button';
 import { Role, UserGender } from '../types';
-import { authService } from '../services/api';
 import { Country, State, City } from 'country-state-city';
 import type { ICountry, IState, ICity } from 'country-state-city';
-import { loginUser } from "../services/api";
+
 
 interface AuthModalProps {
   isOpen: boolean;
